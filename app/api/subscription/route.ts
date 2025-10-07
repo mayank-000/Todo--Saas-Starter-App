@@ -60,13 +60,32 @@ export async function GET() {
         });
 
         if(!user) {
-            return NextResponse.json({error: "User not found"}, {status: 401});
+            return NextResponse.json({error: "User not found"}, {status: 404});
         }
 
-        
-        
-    } catch (error) {
-        
-    }
+        const now = new Date();
+        if(user.subscriptionEnds && user.subscriptionEnds < now) {
+            await prisma.user.update({
+                where: {id: userId},
+                data: {
+                    isSubscribed: false,
+                    subscriptionEnds: null,
+                },
+            });
+            return NextResponse.json({ isSubscribed: false, subscriptionEnds: null});
+        }
 
+        return NextResponse.json({
+            isSubscribed: user.isSubscribed,
+            subscriptionEnds: user.subscriptionEnds,
+        });
+
+    } catch (error) {
+        console.error("Error fetching subscription status:", error);
+        return NextResponse.json(
+            { error: "Internal Server error" },
+            { status: 500 },
+        );
+    }
+    
 }
