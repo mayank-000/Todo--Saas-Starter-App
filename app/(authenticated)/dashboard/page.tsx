@@ -1,6 +1,6 @@
 "use client";
 
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useCallback, useEffect, useState } from "react";
 import { TodoItem } from "@/components/TodoItem";
 import { TodoForm } from "@/components/TodoForm";
@@ -16,7 +16,6 @@ import { useDebounceValue } from "usehooks-ts";
 
 export default function Dashboard() {
   const { user } = useUser();
-  const { toast } = useToast();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,20 +38,13 @@ export default function Dashboard() {
         setTotalPages(data.totalPages);
         setCurrentPage(data.currentPage);
         setIsLoading(false);
-        toast({
-          title: "Success",
-          description: "Todos fetched successfully.",
-        });
+        toast.success("Todos fetched successfully.");
       } catch (error) {
         setIsLoading(false);
-        toast({
-          title: "Error",
-          description: "Failed to fetch todos. Please try again.",
-          variant: "destructive",
-        });
+        toast.error("Failed to fetch todos. Please try again.");
       }
     },
-    [toast, debouncedSearchTerm]
+    [debouncedSearchTerm]
   );
 
   useEffect(() => {
@@ -69,10 +61,7 @@ export default function Dashboard() {
   };
 
   const handleAddTodo = async (title: string) => {
-    toast({
-      title: "Adding Todo",
-      description: "Please wait...",
-    });
+    toast.loading("Adding todo...");
     try {
       const response = await fetch("/api/todos", {
         method: "POST",
@@ -83,24 +72,14 @@ export default function Dashboard() {
         throw new Error("Failed to add todo");
       }
       await fetchTodos(currentPage);
-      toast({
-        title: "Success",
-        description: "Todo added successfully.",
-      });
+      toast.success("Todo added successfully.");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add todo. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to add todo. Please try again.");
     }
   };
 
   const handleUpdateTodo = async (id: string, completed: boolean) => {
-    toast({
-      title: "Updating Todo",
-      description: "Please wait...",
-    });
+    toast.loading("Updating todo...");
     try {
       const response = await fetch(`/api/todos/${id}`, {
         method: "PUT",
@@ -111,24 +90,14 @@ export default function Dashboard() {
         throw new Error("Failed to update todo");
       }
       await fetchTodos(currentPage);
-      toast({
-        title: "Success",
-        description: "Todo updated successfully.",
-      });
+      toast.success("Todo updated successfully.");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update todo. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to update todo. Please try again.");
     }
   };
 
   const handleDeleteTodo = async (id: string) => {
-    toast({
-      title: "Deleting Todo",
-      description: "Please wait...",
-    });
+    toast.loading("Deleting todo...");
     try {
       const response = await fetch(`/api/todos/${id}`, {
         method: "DELETE",
@@ -137,16 +106,9 @@ export default function Dashboard() {
         throw new Error("Failed to delete todo");
       }
       await fetchTodos(currentPage);
-      toast({
-        title: "Success",
-        description: "Todo deleted successfully.",
-      });
+      toast.success("Todo deleted successfully.");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete todo. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to delete todo. Please try again.");
     }
   };
 
@@ -160,7 +122,7 @@ export default function Dashboard() {
           <CardTitle>Add New Todo</CardTitle>
         </CardHeader>
         <CardContent>
-          <TodoForm onSubmit={(title:any) => handleAddTodo(title)} />
+          <TodoForm onSubmit={(title: any) => handleAddTodo(title)} />
         </CardContent>
       </Card>
       {!isSubscribed && todos.length >= 3 && (
@@ -219,4 +181,3 @@ export default function Dashboard() {
     </div>
   );
 }
-

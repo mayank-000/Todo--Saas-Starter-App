@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 // UPDATION---
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { userId } = await auth();
 
@@ -15,7 +15,8 @@ export async function PUT(
 
   try {
     const { newTodo } = await req.json();
-    const todoId = params.id;
+    const { id } = await params;
+    const todoId = id;
 
     const todo = await prisma.todo.findUnique({
       where: { id: todoId },
@@ -45,7 +46,7 @@ export async function PUT(
 }
 
 // DELETION---
-export async function DELETE({ params }: { params: { id: string }}){
+export async function DELETE({ params }: { params: Promise<{ id: string }>}){
   
   const { userId } = await auth();
 
@@ -54,7 +55,8 @@ export async function DELETE({ params }: { params: { id: string }}){
   }
 
   try {
-    const todoId = params.id;
+    const { id } = await params;
+    const todoId = id;
 
     const todo = await prisma.todo.findUnique({
       where: { id: todoId },
