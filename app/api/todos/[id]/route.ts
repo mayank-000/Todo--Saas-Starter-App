@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 
+// UPDATION---
 export async function PUT(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -13,7 +14,7 @@ export async function PUT(
   }
 
   try {
-    const { completed } = await req.json();
+    const { newTodo } = await req.json();
     const todoId = params.id;
 
     const todo = await prisma.todo.findUnique({
@@ -30,10 +31,11 @@ export async function PUT(
 
     const updatedTodo = await prisma.todo.update({
       where: { id: todoId },
-      data: { completed },
+      data: newTodo,
     });
 
     return NextResponse.json(updatedTodo);
+
   } catch (error) {
     return NextResponse.json(
       { error: "Internal Server Error" },
@@ -42,10 +44,9 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// DELETION---
+export async function DELETE({ params }: { params: { id: string }}){
+  
   const { userId } = await auth();
 
   if (!userId) {
@@ -72,6 +73,7 @@ export async function DELETE(
     });
 
     return NextResponse.json({ message: "Todo deleted successfully" });
+    
   } catch (error) {
     return NextResponse.json(
       { error: "Internal Server Error" },

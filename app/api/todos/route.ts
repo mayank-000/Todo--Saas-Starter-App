@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 
 const ITEMS_PER_PAGE = 10;
 
+// READING INTO TODOS----
 export async function GET(req: NextRequest) {
   const { userId } = await auth();
 
@@ -54,6 +55,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// CREATING A TODOS----
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
 
